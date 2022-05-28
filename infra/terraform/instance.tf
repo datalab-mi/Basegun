@@ -20,4 +20,8 @@ resource "openstack_compute_instance_v2" "instance" {
     name        = "internal"
     fixed_ip_v4 = cidrhost(var.subnet_cidr, 6)
   }
+
+  depends_on = [
+    openstack_compute_instance_v2.lb
+  ]
 }
