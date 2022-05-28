@@ -26,7 +26,7 @@ services:
       #TRAEFIK_ENTRYPOINTS_web_HTTP_REDIRECTIONS_ENTRYPOINT_TO: websecure
       #TRAEFIK_ENTRYPOINTS_web_HTTP_REDIRECTIONS_ENTRYPOINT_SCHEME: https
       # http challenge lets encrypt
-      TRAEFIK_CERTIFICATESRESOLVERS_resolver: "true"
+      TRAEFIK_CERTIFICATESRESOLVERS_resolver: ${ENABLE_CERT:-false}
       TRAEFIK_CERTIFICATESRESOLVERS_resolver_ACME_EMAIL: basegun@interieur.gouv.fr
       TRAEFIK_CERTIFICATESRESOLVERS_resolver_ACME_HTTPCHALLENGE: "true"
       TRAEFIK_CERTIFICATESRESOLVERS_resolver_ACME_HTTPCHALLENGE_ENTRYPOINT: web
@@ -49,4 +49,4 @@ services:
       #TRAEFIK_METRICS_PROMETHEUS_ENTRYPOINT: metrics
       # ping
       TRAEFIK_PING: "false"
-      HOST: preprod.basegun.fr
+      HOST: ${HOST}

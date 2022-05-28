@@ -5,7 +5,9 @@ TAG		:= 1.2
 APP_NAME	:= basegun
 REG		:= ghcr.io
 ORG		:= datalab-mi
-
+HOST    := preprod.basegun.fr
+ENABLE_CERT := true
+SERVICE := "192.168.1.6"
 
 export
 
@@ -30,9 +32,6 @@ build-%: check-dc-config-% show-current-tag
 	TAG=${TAG} ${DC} -f docker-compose-$*.yml build
 
 up-%: check-dc-config-% show-current-tag
-ifeq ("$(WORKSPACE)","preprod")
-	TAG=${TAG} PORT_PROD=8080 ${DC} -f docker-compose-$*.yml up -d
-else
 	TAG=${TAG} ${DC} -f docker-compose-$*.yml up -d
 endif
 

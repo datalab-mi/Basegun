@@ -25,4 +25,4 @@ http:
     web:
       loadBalancer:
         servers:
-        - url: http://localhost:8080
+        - url: http://{{ env "SERVICE" }}:80
