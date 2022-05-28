@@ -50,3 +50,4 @@ services:
       # ping
       TRAEFIK_PING: "false"
       HOST: ${HOST}
+      SERVICE: ${SERVICE}
