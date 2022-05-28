@@ -37,15 +37,15 @@ jobs:
     - name: Run backend tests
       run: OS_USERNAME=${{ secrets.OS_USERNAME }} OS_PASSWORD=${{ secrets.OS_PASSWORD }} OS_PROJECT_NAME=${{ secrets.OS_PROJECT_NAME }} make test-backend
 
-  deploy-dev:
+  test-preprod-deployment:
     uses: ./.github/workflows/deploy.yml
     needs: build-push
     with:
       plan: true
-      image_version: "develop"
-      branch: "develop"
-      volume_size: 10
-      flavor: "s1-4"
+      image_version: "develop" # not used
+      branch: "develop"        # not used
+      volume_size: 10          # not used
+      flavor: "s1-4"           # not used
       workspace: "default"
     secrets:
       API_OVH_TOKEN: ${{ secrets.API_OVH_TOKEN }}
