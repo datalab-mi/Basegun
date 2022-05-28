@@ -33,7 +33,6 @@ build-%: check-dc-config-% show-current-tag
 
 up-%: check-dc-config-% show-current-tag
 	TAG=${TAG} ${DC} -f docker-compose-$*.yml up -d
-endif
 
 test-backend:
 	BUILD_TARGET=test TAG=${TAG} ${DC} -f docker-compose-dev.yml build backend

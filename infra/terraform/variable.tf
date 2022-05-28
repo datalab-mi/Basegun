@@ -26,3 +26,8 @@ variable "fixed_ip" {
   type        = string
   description = "Desirated IP address for instance"
 }
+
+variable "deploy_env" {
+    type        = map
+    description = "All variables necessary for running deploy script"
+}
