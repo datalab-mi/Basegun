@@ -36,3 +36,22 @@ jobs:
     - uses: actions/checkout@v2
     - name: Run backend tests
       run: OS_USERNAME=${{ secrets.OS_USERNAME }} OS_PASSWORD=${{ secrets.OS_PASSWORD }} OS_PROJECT_NAME=${{ secrets.OS_PROJECT_NAME }} make test-backend
+
+  deploy-dev:
+    uses: ./.github/workflows/deploy.yml
+    needs: build-push
+    with:
+      plan: true
+      image_version: "develop"
+      branch: "develop"
+      volume_size: 10
+      flavor: "s1-4"
+      workspace: "default"
+    secrets:
+      API_OVH_TOKEN: ${{ secrets.API_OVH_TOKEN }}
+      SERVER_IP: ${{ secrets.PREPROD_SERVER_IP }}
+      OS_PASSWORD: ${{ secrets.OS_PASSWORD }}
+      OS_PROJECT_ID: ${{ secrets.OS_PROJECT_ID }}
+      OS_PROJECT_NAME: ${{ secrets.OS_PROJECT_NAME }}
+      OS_USERNAME: ${{ secrets.OS_USERNAME }}
+      X_OVH_TOKEN: ${{ secrets.PREPROD_OVH_TOKEN }}

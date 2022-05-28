@@ -1,6 +1,11 @@
 on:
   workflow_call:
     inputs:
+      plan:
+        required: true
+        type: boolean
+        description: "This workflow is only a plan, not a deployment"
+        default: true
       image_version:
         required: false
         type: string
@@ -85,14 +90,17 @@ jobs:
       run: terraform workspace select ${WORKSPACE} || terraform workspace new ${WORKSPACE}
 
     - name: Terraform Taint if exist
-      run: terraform taint -allow-missing openstack_compute_instance_v2.instance 
+      run: terraform taint -allow-missing openstack_compute_instance_v2.instance
+
+    - name: Terraform plan
+      if: ${{ inputs.plan }}
+      run: |
+        envsubst < env.tfvars > deployenv.tfvars
+        terraform plan --auto-approve -var-file="deployenv.tfvars"
 
     - name: Terraform apply
+      if: ${{ !inputs.plan }}
       run: |
         envsubst < env.tfvars > deployenv.tfvars
         terraform apply --auto-approve -var-file="deployenv.tfvars"
 
-#TODO:
-#use if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-#or on: push
-#TODO: run script if server is reachable

@@ -59,6 +59,7 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     needs: build-push
     with:
+      plan: false
       image_version: "latest"
       branch: "main"
       volume_size: 10
