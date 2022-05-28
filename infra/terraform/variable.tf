@@ -17,12 +17,12 @@ variable "volume_size" {
   description = "Size in GB of boot volume"
 }
 
+variable "subnet_cidr" {
+  type        = string
+  default     = "192.168.1.0/24"
+}
+
 variable "fixed_ip" {
   type        = string
   description = "Desirated IP address for instance"
-}
-
-variable "deploy_env" {
-    type        = map
-    description = "All variables necessary for running deploy script"
 }

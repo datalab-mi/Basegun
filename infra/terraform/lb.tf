@@ -1,6 +1,6 @@
 
-resource "openstack_compute_instance_v2" "instance" {
-  name            = "private-instance-${terraform.workspace}"
+resource "openstack_compute_instance_v2" "lb" {
+  name            = "load-balancer-${terraform.workspace}"
   image_name      = var.image
   flavor_name     = var.flavor
   key_pair        = data.openstack_compute_keypair_v2.keypair.name
@@ -17,7 +17,12 @@ resource "openstack_compute_instance_v2" "instance" {
   }
 
   network {
+    name        = "Ext-Net"
+    fixed_ip_v4 = var.fixed_ip
+  }
+
+  network {
     name        = "internal"
-    fixed_ip_v4 = cidrhost(var.subnet_cidr, 6)
+    fixed_ip_v4 = cidrhost(var.subnet_cidr, 5)
   }
 }

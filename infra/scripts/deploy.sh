@@ -14,7 +14,7 @@ cd /home/$USER && mkdir -p $APP_NAME && curl -kLs $APP_URL \
 
 (
   cd $APP_NAME
-  [[ $WORKSPACE = "preprod" ]] && make start-https
-  make CONTINUE=y TAG=${APP_VERSION} deploy-prod
+  if [ $(hostname) == "load-balancer-${WORKSPACE}" ]; then \
+  make HOST=$HOST start-https; else make CONTINUE=y TAG=${APP_VERSION} deploy-prod; fi
 )
 exit $?

@@ -1,3 +1,8 @@
+data "openstack_images_image_v2" "debian" {
+  name        = var.image
+  most_recent = true
+}
+
 
 data "template_file" "init" {
   template = file("${path.module}/../scripts/init.yaml")
@@ -9,6 +14,7 @@ data "template_file" "deploy" {
   vars = {
     ENVIRONMENT = jsonencode("${var.deploy_env}")
     APP_VERSION = "${var.deploy_env.APP_VERSION}"
+    WORKSPACE   = "${terraform.workspace}"
   }
 }
 
