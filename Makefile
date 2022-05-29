@@ -7,7 +7,7 @@ REG		:= ghcr.io
 ORG		:= datalab-mi
 HOST    := preprod.basegun.fr
 ENABLE_CERT := true
-SERVICE := "192.168.1.6"
+SERVICE := 192.168.1.6
 
 export
 
