@@ -16,6 +16,8 @@ services:
       - OS_PASSWORD
       - OS_PROJECT_NAME
       - WORKSPACE
+      - UVICORN_LOG_LEVEL=${UVICORN_LOG_LEVEL}
+      - LOG_LEVEL=${UVICORN_LOG_LEVEL}
     image: basegun-backend:${TAG}-prod
     ports:
       - 5000:5000

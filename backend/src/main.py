@@ -1,4 +1,5 @@
 import shutil
+import sys
 import os
 import logging
 from logging.handlers import TimedRotatingFileHandler
@@ -16,6 +17,7 @@ import swiftclient
 from src.model import load_model_inference, predict_image
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+WORKSPACE = os.environ.get("WORKSPACE")
 
 def init_variable(var_name: str, path: str) -> str:
     """Inits global variable for folder path
@@ -79,11 +81,11 @@ origins = [ # allow requests from front-end
     "https://preprod.basegun.fr",
     "http://localhost",
     "http://localhost:8080",
-    "http://localhost:3000"
+    "http://localhost:3000",
 ]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -117,22 +119,27 @@ else:
     APP_VERSION = "-1"
     MODEL_VERSION = "-1"
 
-# Connection to OVH cloud
-conn = swiftclient.Connection(
-    authurl="https://auth.cloud.ovh.net/v3",
-    user=os.environ["OS_USERNAME"],
-    key=os.environ["OS_PASSWORD"],
-    os_options={
-        "project_name": os.environ["OS_PROJECT_NAME"],
-        "region_name": "GRA"
-    },
-    auth_version='3'
-)
 CLOUD_PATH = f'https://storage.gra.cloud.ovh.net/v1/\
 AUTH_df731a99a3264215b973b3dee70a57af/basegun-public/\
-uploaded-images/{os.environ["WORKSPACE"]}/'
+uploaded-images/{WORKSPACE}/'
 
-conn.get_account()
+# Connection to OVH cloud if is possible
+if all([os.environ.get("OS_USERNAME"), os.environ.get("OS_PROJECT_NAME"), os.environ.get("OS_PASSWORD")]):
+    conn = swiftclient.Connection(
+        authurl="https://auth.cloud.ovh.net/v3",
+        user=os.environ["OS_USERNAME"],
+        key=os.environ["OS_PASSWORD"],
+        os_options={
+            "project_name": os.environ["OS_PROJECT_NAME"],
+            "region_name": "GRA"
+        },
+        auth_version='3'
+    )
+    conn.get_account()
+else:
+    logger.warning('OVH credentials was not added')
+
+
 
 async def upload_image_ovh(content, img_name):
     """ Uploads an image to owh swift container basegun-public
@@ -144,7 +151,7 @@ async def upload_image_ovh(content, img_name):
         img_name (str): name we want to give on ovh
     """
     conn.put_object("basegun-public",
-                    f'uploaded-images/{os.environ["WORKSPACE"]}/{img_name}',
+                    f'uploaded-images/{WORKSPACE}/{img_name}',
                     contents=content)
 
 
@@ -180,13 +187,18 @@ async def imageupload(
     date: float = Form(...),
     userId: str = Form(...),
     geolocation: str = Form(...) ):
+    upload_failed = None
 
     try:
         img_name = str(uuid4()) + os.path.splitext(image.filename)[1]
         img_bytes = image.file.read()
 
         # upload image to OVH Cloud
-        upload = asyncio.create_task(upload_image_ovh(img_bytes, img_name))
+        try:
+            upload = asyncio.create_task(upload_image_ovh(img_bytes, img_name))
+        except Exception as r:
+            upload_failed = True
+            sys.stdout.write(f'Image was not uploaded')
 
         # prepare content logs
         user_agent = parse(request.headers.get("user-agent"))
@@ -226,7 +238,8 @@ async def imageupload(
             extras_logging["bg_confidence_level"] = "high"
         logger.info("Identification request", extra=extras_logging)
 
-        await upload
+        if not upload_failed:
+            await upload
 
         return {
             "file": os.path.join(CLOUD_PATH, img_name),
