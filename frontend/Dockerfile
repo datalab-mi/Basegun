@@ -5,8 +5,7 @@ WORKDIR /app
 # downgrade npm version to avoid chokidar error
 RUN npm install -g npm@7.5.4
 
-COPY ./package.json ./package-lock.json ./
-
+COPY ./package.json ./package-lock.json ./.npmrc ./
 RUN npm ci
 
 COPY src ./src
