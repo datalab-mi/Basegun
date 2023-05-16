@@ -34,6 +34,8 @@ function submitUpload (base64, fileName) {
     fd.append('date', Date.now() / 1000) // date.now gives in milliseconds, convert to seconds
     fd.append('geolocation', resultStore.geolocation)
 
+    // HERE : save image locally
+
     axios.post('/upload', fd)
       .then(res => {
         resultStore.setResult({
