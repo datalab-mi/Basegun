@@ -1,7 +1,10 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { registerSW } from 'virtual:pwa-register'
-import HeaderMain from '@/components/HeaderMain.vue'
+import { useAppStore } from './stores/app.js'
+import HeaderMain from './components/HeaderMain.vue'
+
+const appStore = useAppStore()
 
 const online = ref(navigator.onLine)
 
@@ -24,7 +27,7 @@ registerSW({ immediate: true })
 </script>
 
 <template>
-  <HeaderMain v-show="online" />
+  <HeaderMain v-show="appStore.displayHeader && online" />
   <router-view v-if="online" />
   <div
     v-else
