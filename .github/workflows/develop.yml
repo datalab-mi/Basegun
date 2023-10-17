@@ -1,0 +1,23 @@
+name: Develop environment CI / CD
+on:
+  push:
+    branches:
+      - 'develop'
+      - 'add-cd-for-dev-env'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Update Infra Version
+        run: |
+          yq -i '.backend.image.tag = "${{ github.sha }}"' ./infra/kube/helm/values-dso.yaml
+          yq -i '.frontend.image.tag = "${{ github.sha }}"' ./infra/kube/helm/values-dso.yaml
+
+      - name: Commit and push changes
+        uses: devops-infra/action-commit-push@v0.3
+        with:
+          github_token: ${{ secrets.JOB_GITHUB_TOKEN }}
+          commit_prefix: "[skip ci]"
+          commit_message: "Version updated"
