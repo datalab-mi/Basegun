@@ -25,17 +25,17 @@ const LPS = {
   },
   PARIS: {
     email: 'snps-lps75@interieur.gouv.fr',
-    phone: '01 71 92 65 02',
+    phone: '01 77 72 07 77',
   },
   LYON: {
     email: 'snps-lps69@interieur.gouv.fr',
-    phone: '04 72 86 89 70',
+    phone: '04 72 86 89 71',
   },
 }
 
 const IRCGN = {
-  email: 'snps-lps69@interieur.gouv.fr',
-  phone: '04 72 86 89 70',
+  email: 'x@interieur.gouv.fr',
+  phone: 'x',
 }
 const shownLPS = ref<null | string>(null)
 const showIRCGNModal = ref(false)
