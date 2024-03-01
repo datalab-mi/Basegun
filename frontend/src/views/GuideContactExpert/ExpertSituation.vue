@@ -36,6 +36,7 @@ const LPS = {
 const IRCGN = {
   email: 'db.dcpc.ircgn@gendarmerie.interieur.gouv.fr',
   phone: '01 78 47 31 46 ',
+  phoneNightWE: '06 63 70 54 99 ',
 }
 const shownLPS = ref<null | string>(null)
 const showIRCGNModal = ref(false)
@@ -235,8 +236,11 @@ const showIRCGNModal = ref(false)
             <div>
               <div class="fr-col-11 fr-col-lg-6 mx-auto">
                 <p v-if="priority === 'high'">
-                  Vous trouverez ci-dessous le numéro de téléphone de la permanence de l'IRCGN.<br><br>
-                  <span class="font-bold">{{ IRCGN.phone }}</span>
+                  Vous trouverez ci-dessous la permanence du département balistique à contacter <span class="font-bold">uniquement</span> en journée pendant la semaine.<br><br>
+                  <span class="font-bold">{{ IRCGN.phone }}</span><br><br>
+
+                  Le soir et le week-end, veuillez contacter le :<br><br>
+                  <span class="font-bold">{{ IRCGN.phoneNightWE }}</span>
                 </p>
                 <p v-if="priority === 'low'">
                   Vous trouverez ci-dessous l'adresse mail de la permanence de l'IRCGN.<br><br>
