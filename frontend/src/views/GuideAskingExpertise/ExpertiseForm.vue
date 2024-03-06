@@ -57,7 +57,7 @@
         <div class="m-1 justify-center pb-30">
           <DsfrInputGroup>
             <DsfrInput
-              v-model="nigendMatricule"
+              v-model="agent_identifier"
               class="mb-5"
               label="NIGEND / Matricule (PN)"
               label-visible
@@ -71,14 +71,14 @@
               required="true"
             />
             <DsfrInput
-              v-model="serviceAffectation"
+              v-model="assignment_service"
               class="mb-5"
               label="Service d'affectation"
               label-visible
               hint="(optionnel)"
             />
             <DsfrInput
-              v-model="numeroTelephone"
+              v-model="agent_phone_number"
               class="mb-5"
               label="Numéro de téléphone"
               type="tel"
@@ -88,7 +88,7 @@
             />
             <DsfrInput
               id="adresse"
-              v-model="adresseElectronique"
+              v-model="agent_email"
               class="mb-5"
               label="Adresse électronique"
               type="email"
@@ -113,14 +113,14 @@
             />
 
             <DsfrSelect
-              v-model="typologieArme"
+              v-model="weapon_type"
               class="mb-5"
               label="Typologie de l'arme"
               :options="typologieArmeOptions"
             />
 
             <DsfrInput
-              v-model="longueurArme"
+              v-model="weapon_length"
               class="mb-5"
               label="Longueur de l'arme (en cm)"
               type="number"
@@ -129,7 +129,7 @@
             />
 
             <DsfrInput
-              v-model="longueurCanon"
+              v-model="weapon_barrel_length"
               class="mb-5"
               label="Longueur du canon (en cm)"
               type="number"
@@ -212,30 +212,34 @@
         <div class="m-1 justify-center pb-30">
           <div class="descPhotos mb-8">
             <DsfrFileUpload
-              v-model="vueLargeGauche"
+              v-model="picture_left"
               label="Vue d'ensemble côté gauche"
+              @change="(files) => handleFileUpload(files, 'picture_left')"
             />
           </div>
 
           <div class="descPhotos mb-8">
             <DsfrFileUpload
-              v-model="vueLargeDroite"
+              v-model="picture_right"
               label="Vue d'ensemble côté droite"
+              @change="(files) => handleFileUpload(files, 'picture_right')"
             />
           </div>
 
           <div class="descPhotos mb-8">
             <DsfrFileUpload
-              v-model="vueRapprochee"
+              v-model="picture_markings"
               label="Vue rapprochée des marquages et poinçons"
+              @change="(files) => handleFileUpload(files, 'picture_markings')"
             />
           </div>
 
           <div class="mb-8">
             <DsfrFileUpload
               v-if="showVueRapprochee2"
-              v-model="vueRapprochee2"
+              v-model="picture_markings2"
               :label="`Vue rapprochée des marquages et poinçons 2/3`"
+              @change="(files) => handleFileUpload(files, 'picture_markings2')"
             />
 
             <DsfrButton
@@ -248,8 +252,9 @@
           <div class="mb-8">
             <DsfrFileUpload
               v-if="showVueRapprochee3"
-              v-model="vueRapprochee3"
+              v-model="picture_markings3"
               :label="`Vue rapprochée des marquages et poinçons 3/3`"
+              @change="(files) => handleFileUpload(files, 'picture_markings3')"
             />
 
             <DsfrButton
@@ -263,8 +268,9 @@
           <div class="descPhotos mb-8">
             <DsfrFileUpload
               v-if="showChargeur"
-              v-model="chargeur"
+              v-model="picture_charger"
               label="Chargeur"
+              @change="(files) => handleFileUpload(files, 'picture_charger')"
             />
 
             <DsfrCheckbox
@@ -471,27 +477,22 @@ const toggleMarquage = () => {
   buttonLabel5.value = showMarquage.value ? 'Pas de marquages' : 'Décocher s\'il y a des marquages'
 }
 
-const nigendMatricule = ref('')
-const numeroProcedure = ref('')
-const serviceAffectation = ref('')
-const numeroTelephone = ref('')
-const adresseElectronique = ref('')
-const dateSaisie = ref('')
-const typologieArme = ref('')
-const longueurArme = ref('')
-const longueurCanon = ref('')
-const descMarquage = ref('')
-const vueLargeGauche = ref()
-const vueLargeDroite = ref()
-const vueRapprochee = ref()
-const vueRapprochee2 = ref()
-const vueRapprochee3 = ref()
-const chargeur = ref()
-
-const sendData = () => {
-  const formDataToUpdate = getCurrentFormData()
-  handleFormDataUpdate(formDataToUpdate)
-}
+const agent_identifier: Ref<number> = ref(null)
+const numeroProcedure: Ref<number> = ref(null)
+const assignment_service: Ref<string> = ref('')
+const agent_phone_number: Ref<number> = ref(null)
+const agent_email: Ref<string> = ref('')
+const dateSaisie: Ref<string> = ref('')
+const weapon_type: Ref<string> = ref('')
+const weapon_length: Ref<number> = ref(null)
+const weapon_barrel_length: Ref<number> = ref(null)
+const descMarquage: Ref<string> = ref('')
+const picture_left: Ref<File | null> = ref(null)
+const picture_right: Ref<File> = ref(null)
+const picture_markings: Ref<File> = ref(null)
+const picture_markings2: Ref<File> = ref(null)
+const picture_markings3: Ref<File> = ref(null)
+const picture_charger: Ref<File> = ref(null)
 
 const goToPreviousStep = () => (
   currentStep.value = currentStep.value - 2 as 1 | 2 | 3
@@ -502,9 +503,42 @@ const goToNextStep = () => {
   currentStep.value = currentStep.value + 0 as 1 | 2 | 3
 }
 
+const sendData = () => {
+  const formDataToUpdate = getCurrentFormData()
+  console.log('Données à envoyer à handleFormDataUpdate :', formDataToUpdate)
+  handleFormDataUpdate(formDataToUpdate)
+}
+
+const handleFileUpload = async (files: FileList | null, vModel: string) => {
+  if (files && files.length > 0) {
+    const file = files[0]
+    const base64String = await readFileAsBase64(file)
+    const base64Data = base64String.split(',')[1]
+
+    console.log(base64Data)
+    console.log(vModel)
+
+    const formDataToUpdate = getCurrentFormData(vModel, base64Data)
+    handleFormDataUpdate(formDataToUpdate)
+  }
+}
+
+const readFileAsBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      const base64String = reader.result as string
+      resolve(base64String)
+    }
+    reader.onerror = (error) => {
+      reject(error)
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
 const handleFormDataUpdate = (form: Record<string, number | string | File>) => {
   console.log('Données mises à jour:', form)
-
   Object.entries(form).forEach(([key, value]) => {
     if (formData.has(key)) {
       formData.set(key, value)
@@ -512,46 +546,40 @@ const handleFormDataUpdate = (form: Record<string, number | string | File>) => {
       formData.append(key, value)
     }
   })
-
   console.log('Toutes les données:', formData)
 }
 
-const getCurrentFormData = () => {
+const getCurrentFormData = (fieldName: string, base64String: string) => {
   let formDataToUpdate: Record<string, number | string | File> = {}
 
   if (currentStep.value === 1) {
     formDataToUpdate = {
-      nigendMatricule: nigendMatricule.value,
+      agent_identifier: agent_identifier.value,
       numeroProcedure: numeroProcedure.value,
-      serviceAffectation: serviceAffectation.value,
-      numeroTelephone: numeroTelephone.value,
-      adresseElectronique: adresseElectronique.value,
+      assignment_service: assignment_service.value,
+      agent_phone_number: agent_phone_number.value,
+      agent_email: agent_email.value,
     }
   } else if (currentStep.value === 2) {
     formDataToUpdate = {
       dateSaisie: dateSaisie.value,
-      typologieArme: typologieArme.value,
-      longueurArme: longueurArme.value,
-      longueurCanon: longueurCanon.value,
+      weapon_type: weapon_type.value,
+      weapon_length: weapon_length.value,
+      weapon_barrel_length: weapon_barrel_length.value,
       descMarquage: descMarquage.value,
     }
   } else if (currentStep.value === 3) {
     formDataToUpdate = {
-      vueLargeGauche: vueLargeGauche.value,
-      vueLargeDroite: vueLargeDroite.value,
-      vueRapprochee: vueRapprochee.value,
-      vueRapprochee2: vueRapprochee2.value,
-      vueRapprochee3: vueRapprochee3.value,
-      chargeur: chargeur.value,
+      [fieldName]: base64String,
     }
   }
 
   return formDataToUpdate
 }
 
-const handleSubmit = () => {
-  sendData()
-  sendFormData()
+const handleSubmit = async () => {
+  await sendData()
+  await sendFormData()
   showModalSubmit.value = true
 }
 
@@ -572,10 +600,10 @@ const errorMessage = false
 const areRequiredFieldsFilled = () => {
   if (currentStep.value === 1) {
     return (
-      nigendMatricule.value.trim() !== '' &&
-      numeroProcedure.value.trim() !== '' &&
-      numeroTelephone.value.trim() !== '' &&
-      adresseElectronique.value.trim() !== ''
+      agent_identifier.value !== 0 &&
+      numeroProcedure.value !== 0 &&
+      agent_phone_number.value !== 0 &&
+      agent_email.value.trim() !== ''
     )
   } else if (currentStep.value === 2) {
     return (
@@ -583,20 +611,20 @@ const areRequiredFieldsFilled = () => {
     )
   } else if (currentStep.value === 3 && showChargeur.value === true) {
     return (
-      vueLargeGauche.value &&
-      vueLargeDroite.value &&
-      vueRapprochee.value &&
-      (!showVueRapprochee2.value || vueRapprochee2.value) &&
-      (!showVueRapprochee3.value || vueRapprochee3.value) &&
-      chargeur.value
+      picture_left.value &&
+      picture_right.value &&
+      picture_markings.value &&
+      (!showVueRapprochee2.value || picture_markings2.value) &&
+      (!showVueRapprochee3.value || picture_markings3.value) &&
+      picture_charger.value
     )
   } else if (currentStep.value === 3) {
     return (
-      vueLargeGauche.value &&
-      vueLargeDroite.value &&
-      vueRapprochee.value &&
-      (!showVueRapprochee2.value || vueRapprochee2.value) &&
-      (!showVueRapprochee3.value || vueRapprochee3.value)
+      picture_left.value &&
+      picture_right.value &&
+      picture_markings.value &&
+      (!showVueRapprochee2.value || picture_markings2.value) &&
+      (!showVueRapprochee3.value || picture_markings3.value)
     )
   }
 }

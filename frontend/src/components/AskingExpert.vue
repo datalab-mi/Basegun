@@ -45,22 +45,23 @@ async function submitTutorialFeedback () {
       import.meta.env.DEV && console.log(err)
       setMessage({ type: 'error', message: 'Une erreur a eu lieu en enregistrant de votre message.' })
     })
-    .finally(() => setTimeout(() => {
+    .finally(() => setTimeout(async () => {
       stepsStore.setCurrentStep(1)
-  try {
-    await sendTutorialFeedback(feedback)
-    stepsStore.tutorialFeedback = feedback.tutorial_feedback
-    setMessage({ type: 'success', message: 'Votre message a été pris en compte' })
-  } catch (err) {
-    import.meta.env.DEV && console.log(err)
-    setMessage({ type: 'error', message: 'Une erreur a eu lieu en enregistrant de votre message.' })
-  } finally {
-    setTimeout(() => {
-      stepsStore.setCurrentStep(undefined)
-      stepsStore.tutorialFeedback = ''
-      router.push({ name: 'StartPage' })
-    }, 3000)
-  }
+      try {
+        await sendTutorialFeedback(feedback)
+        stepsStore.tutorialFeedback = feedback.tutorial_feedback
+        setMessage({ type: 'success', message: 'Votre message a été pris en compte' })
+      } catch (err) {
+        import.meta.env.DEV && console.log(err)
+        setMessage({ type: 'error', message: 'Une erreur a eu lieu en enregistrant de votre message.' })
+      } finally {
+        setTimeout(() => {
+          stepsStore.setCurrentStep(undefined)
+          stepsStore.tutorialFeedback = ''
+          router.push({ name: 'StartPage' })
+        }, 3000)
+      }
+    }))
 }
 </script>
 <template>

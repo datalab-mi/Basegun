@@ -228,7 +228,6 @@ const bypassCrosscall = true
                     icon="ri-alert-line"
                     label="Contacter un spécialiste"
                     @click="router.push({ name:'ExpertiseForm'})"
-                    @click="router.push({ name:'ExpertiseForm'})"
                   />
                 </div>
               </div>

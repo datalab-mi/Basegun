@@ -26,6 +26,10 @@ export const sendIdentificationDummyFeedback = async (feedbackDummy: any) => {
 }
 
 export const sendExpertiseForm = async (feedbackExpert: any) => {
-  const { data } = await axios.post(ASK_FOR_OPINION_ROUTE, feedbackExpert)
+  const { data } = await axios.post(ASK_FOR_OPINION_ROUTE, feedbackExpert, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
   return data
 }
