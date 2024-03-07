@@ -9,10 +9,10 @@ describe('Firearm Identification', () => {
     cy.contains('span', 'canon vers la droite')
 
     cy.getByDataTestid('select-file').as('fileInput')
-    cy.intercept('POST', '/api/upload').as('upload')
+    cy.intercept('POST', '/api/analyses/').as('upload')
     cy.get('@fileInput').selectFile('./cypress/images/pistolet-semi-auto.jpg', { force: true })
     cy.wait('@upload').then(({ response }) => {
-      expect(response.statusCode).to.eq(200)
+      expect(response.statusCode).to.eq(201)
     })
     cy.getByDataTestid('next-step').click()
     cy.url().should('contain', '/guide-identification/informations-complementaires')
@@ -39,10 +39,10 @@ describe('Firearm Identification', () => {
     cy.contains('span', 'canon vers la droite')
 
     cy.getByDataTestid('select-file').as('fileInput')
-    cy.intercept('POST', '/api/upload').as('upload')
+    cy.intercept('POST', '/api/analyses/').as('upload')
     cy.get('@fileInput').selectFile('./cypress/images/pistolet-semi-auto.jpg', { force: true })
     cy.wait('@upload').then(({ response }) => {
-      expect(response.statusCode).to.eq(200)
+      expect(response.statusCode).to.eq(201)
     })
     cy.getByDataTestid('next-step').click()
     cy.url().should('contain', '/guide-identification/informations-complementaires')

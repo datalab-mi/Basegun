@@ -8,25 +8,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          repository: datalab-mi/basegun-backend
+      
+      - uses: actions/checkout@v3
+        with:
+          path: frontend
 
       - name: Start stack using docker compose
         run: docker compose up -d
 
-      - name: Setup nodejs (for cypress)
-        uses: actions/setup-node@v3
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
         with:
-          node-version: 18
-          check-latest: true
-          cache: "npm"
-          cache-dependency-path: "frontend/package-lock.json"
-      
-      - name: Install npm packages (for cypress)
-        run: npm ci
-        working-directory: ./frontend
-
-      - name: Test end to end (cypress)
-        run: FRONTEND_HOST=localhost FRONTEND_PORT=3000 npm run test:e2e-ci
-        working-directory: ./frontend
+          working-directory: ./frontend/frontend
+          start: npm run start
+          command: npm run test:e2e-ci
 
       - name: Send artifacts
         uses: actions/upload-artifact@v3
@@ -34,4 +31,4 @@ jobs:
         with:
           name: cypress-screenshots
           path: |
-            ./frontend/cypress/screenshots/
+            ./frontend/frontend/cypress/screenshots/

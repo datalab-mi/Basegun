@@ -9,10 +9,10 @@ describe('Firearm Fiability', () => {
     cy.contains('span', 'canon vers la droite')
 
     cy.getByDataTestid('select-file').as('fileInput')
-    cy.intercept('POST', '/api/upload').as('upload')
+    cy.intercept('POST', '/api/analyses/').as('upload')
     cy.get('@fileInput').selectFile('./cypress/images/pistolet-semi-auto.jpg', { force: true })
     cy.wait('@upload').then(({ response }) => {
-      expect(response.statusCode).to.eq(200)
+      expect(response.statusCode).to.eq(201)
     })
     cy.getByDataTestid('next-step').click()
     cy.url().should('contain', '/guide-identification/informations-complementaires')
@@ -40,10 +40,10 @@ describe('Firearm Fiability', () => {
     cy.contains('span', 'canon vers la droite')
 
     cy.getByDataTestid('select-file').as('fileInput')
-    cy.intercept('POST', '/api/upload').as('upload')
+    cy.intercept('POST', '/api/analyses/').as('upload')
     cy.get('@fileInput').selectFile('./cypress/images/arme-medium.jpg', { force: true })
     cy.wait('@upload').then(({ response }) => {
-      expect(response.statusCode).to.eq(200)
+      expect(response.statusCode).to.eq(201)
     })
     cy.url().should('contain', '/guide-identification/resultat-typologie')
     cy.contains('p', 'Arme semi-automatique ou automatique')
@@ -62,10 +62,10 @@ describe('Firearm Fiability', () => {
     cy.contains('span', 'canon vers la droite')
 
     cy.getByDataTestid('select-file').as('fileInput')
-    cy.intercept('POST', '/api/upload').as('upload')
+    cy.intercept('POST', '/api/analyses/').as('upload')
     cy.get('@fileInput').selectFile('./cypress/images/arme-low.jpg', { force: true })
     cy.wait('@upload').then(({ response }) => {
-      expect(response.statusCode).to.eq(200)
+      expect(response.statusCode).to.eq(201)
     })
     cy.url().should('contain', '/guide-identification/resultat-typologie')
     cy.contains('p', 'Catégorie Non déterminée')

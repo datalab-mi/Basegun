@@ -3,10 +3,10 @@ describe('Securing Firearm and Identification', () => {
     cy.accueil()
     cy.miseEnSecurite()
     cy.getByDataTestid('select-file').as('fileInput')
-    cy.intercept('POST', '/api/upload').as('upload')
+    cy.intercept('POST', '/api/analyses/').as('upload')
     cy.get('@fileInput').selectFile('./cypress/images/pistolet-semi-auto.jpg', { force: true })
     cy.wait('@upload').then(({ response }) => {
-      expect(response.statusCode).to.eq(200)
+      expect(response.statusCode).to.eq(201)
     })
     cy.url().should('contain', '/mise-en-securite-choix-option-etape/1')
     cy.getByDataTestid('button-next').should('have.attr', 'disabled')

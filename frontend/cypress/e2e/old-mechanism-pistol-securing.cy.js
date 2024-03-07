@@ -3,10 +3,10 @@ describe('Old Mechanism Pistol Securing', () => {
     cy.accueil()
     cy.miseEnSecurite()
     cy.getByDataTestid('select-file').as('fileInput')
-    cy.intercept('POST', '/api/upload').as('upload')
+    cy.intercept('POST', '/api/analyses/').as('upload')
     cy.get('@fileInput').selectFile('./cypress/images/pistolet-ancien-a-percussion-monocoup.jpg', { force: true })
     cy.wait('@upload').then(({ response }) => {
-      expect(response.statusCode).to.eq(200)
+      expect(response.statusCode).to.eq(201)
     })
     cy.pasDeGuide()
     cy.getByDataTestid('arm-category').should('contain', 'Catégorie D')
