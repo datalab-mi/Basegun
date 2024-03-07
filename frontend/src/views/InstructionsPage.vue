@@ -18,14 +18,10 @@ const router = useRouter()
 const handledImageTypes = 'image/jpeg, image/png, image/tiff, image/webp, image/bmp, image/gif'
 
 async function uploadImage (base64: string, fileName: string) {
-  const file = await srcToFile(base64, fileName, 'image/jpeg')
-
-  const fd = new FormData()
-  fd.append('image', file, file.name)
-  fd.append('date', '' + (Date.now() / 1000)) // date.now gives in milliseconds, convert to seconds
-
   try {
-    const { data } = await axios.post('/upload', fd)
+    const { data } = await axios.post('/analyses/', {
+      "picture": base64
+    })
     resultStore.$patch({
       typology: data.label,
       confidence: data.confidence,
@@ -79,12 +75,6 @@ function resizeImage (uploadedFile: File) {
     }
     image.onerror = (err) => reject(err)
   })
-}
-
-async function srcToFile (src: string, fileName: string, mimeType: string) {
-  const res = await fetch(src)
-  const buf = await res.arrayBuffer()
-  return new File([buf], fileName, { type: mimeType })
 }
 
 function onFileSelected (event: InputEvent & { target: InputEvent['target'] & { files: File[] } }) {

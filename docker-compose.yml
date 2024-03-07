@@ -10,7 +10,7 @@ services:
         - CACERT_LOCATION
       context: ./backend
       target: ${BUILD_TARGET:-dev}
-    command: uvicorn src.main:app --reload --host 0.0.0.0 --port 5000 --no-server-header
+    command: uvicorn src.main:app --reload --host 0.0.0.0 --port 8000 --no-server-header
     container_name: basegun-backend
     environment:
       - S3_URL_ENDPOINT=http://minio:9000
@@ -23,7 +23,7 @@ services:
       - WORKSPACE=dev
       - REQUESTS_CA_BUNDLE=$CACERT_LOCATION
     ports:
-      - 5000:5000
+      - 8000:8000
     volumes:
       - $PWD/backend/src:/app/src
       - $PWD/backend/tests:/app/tests
