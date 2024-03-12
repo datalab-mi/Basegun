@@ -19,7 +19,9 @@ register()
 const pinia = createPinia()
 
 // the FastAPI backend
-axios.defaults.baseURL = '/api/'
+const apiHost = import.meta.env.VITE_API_HOST || 'http://basegun-backend:5000'
+
+axios.defaults.baseURL = apiHost + '/api/'
 
 // Register all icons
 addIcons(...Object.values(icons))

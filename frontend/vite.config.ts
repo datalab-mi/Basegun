@@ -11,8 +11,6 @@ import {
   vueDsfrComponentResolver,
 } from '@gouvminint/vue-dsfr'
 
-const apiHost = process.env.API_HOST || 'http://basegun-backend:5000'
-
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -100,12 +98,6 @@ export default defineConfig({
     },
   },
   server: {
-    host: true,
-    proxy: {
-      '^/api': {
-        target: `${apiHost}`,
-        changeOrigin: true,
-      },
-    },
+    host: true
   },
 })

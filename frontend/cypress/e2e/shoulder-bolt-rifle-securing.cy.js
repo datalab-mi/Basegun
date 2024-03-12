@@ -3,10 +3,10 @@ describe('Shoulder Bolt Rifle Securing', () => {
     cy.accueil()
     cy.miseEnSecurite()
     cy.getByDataTestid('select-file').as('fileInput')
-    cy.intercept('POST', '/api/upload').as('upload')
+    cy.intercept('POST', '/api/analyses/').as('upload')
     cy.get('@fileInput').selectFile('./cypress/images/epaule-a-verrou.jpg', { force: true })
     cy.wait('@upload').then(({ response }) => {
-      expect(response.statusCode).to.eq(200)
+      expect(response.statusCode).to.eq(201)
     })
     cy.getVideo()
     cy.url().should('contain', '/mise-en-securite-tutoriel')

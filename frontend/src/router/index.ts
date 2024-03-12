@@ -24,6 +24,7 @@ const IdentificationFinalResult = () => import('@/views/GuideIdentificationFirea
 const IdentificationFurtherInformations = () => import('@/views/GuideIdentificationFirearm/IdentificationFurtherInformations.vue')
 const IdentificationSelectAmmo = () => import('@/views/GuideIdentificationFirearm/IdentificationSelectAmmo.vue')
 const ExpertSituation = () => import('@/views/GuideContactExpert/ExpertSituation.vue')
+const ExpertiseForm = () => import('@/views/GuideAskingExpertise/ExpertiseForm.vue')
 
 const routes: RouteRecordRaw[] = [
   {
@@ -183,6 +184,12 @@ const routes: RouteRecordRaw[] = [
     path: '/guide-contact-gn',
     name: 'ExpertSituationGN',
     component: ExpertSituation,
+  },
+
+  {
+    path: '/guide-demande-expertise',
+    name: 'ExpertiseForm',
+    component: ExpertiseForm,
   },
 ]
 

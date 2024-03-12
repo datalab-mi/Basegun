@@ -1,13 +1,14 @@
 <script lang="ts" setup>
 import { ref, computed, watchEffect } from 'vue'
-import axios from 'axios'
+import { useRouter, useRoute } from 'vue-router'
+
 import SnackbarAlert from '@/components/SnackbarAlert.vue'
 import { resultTree } from '@/utils/firearms-utils/index'
 import { isUserUsingCrosscall } from '@/utils/isUserUsingCrosscall'
 import { useSnackbarStore } from '@/stores/snackbar'
 import { useStepsStore } from '@/stores/steps'
 import { useResultStore } from '@/stores/result'
-import { useRouter, useRoute } from 'vue-router'
+import { sendIdentificationFeedback } from '@/api/api-client'
 
 const { setMessage } = useSnackbarStore()
 const stepsStore = useStepsStore()
@@ -56,8 +57,8 @@ const mention = computed(() => isDummy.value === true
 
 const mentionIfisDummy = ref("Libre d'acquisition et de détention")
 
-function sendFeedback (isCorrect: boolean) {
-  const json = {
+async function submitFeedback (isCorrect: boolean) {
+  const feedbackData = {
     image_url: imgUrl.value,
     feedback: isCorrect,
     confidence: confidence.value,
@@ -69,19 +70,27 @@ function sendFeedback (isCorrect: boolean) {
   } else {
     isDown.value = true
   }
-  axios.post('/identification-feedback', json)
-    .then(async res => {
-      console.log(res)
-      setMessage({ type: 'success', message: 'Votre vote a été pris en compte' })
-    })
-    .catch(async (err) => {
-      console.log(err)
-      setMessage({ type: 'error', message: 'Une erreur a eu lieu en enregistrant votre vote.' })
-    })
-    .finally(() => {
-      isFeedbackDone.value = true
-    })
+
+  try {
+    const res = await sendIdentificationFeedback(feedbackData)
+    console.log(res)
+    setMessage({ type: 'success', message: 'Votre vote a été pris en compte' })
+  } catch (err) {
+    console.log(err)
+    setMessage({ type: 'error', message: 'Une erreur a eu lieu en enregistrant votre vote.' })
+  } finally {
+    isFeedbackDone.value = true
+  }
 }
+
+const userAgent = window.navigator.userAgent
+const keyWords = ['Mobile', 'Mozilla', 'Crosscall']
+
+const foundAllKeyWords = keyWords.every(keyWord => {
+  return userAgent.includes(keyWord)
+})
+
+const bypassCrosscall = true
 </script>
 
 <template>
@@ -124,6 +133,12 @@ function sendFeedback (isCorrect: boolean) {
               Nous n'avons pas suffisamment d'éléments pour fournir une réponse fiable. Nous vous conseillons de faire appel à un expert.
             </p>
             <ContactExpert v-if="isUserUsingCrosscall()" />
+            <DsfrButton
+              class="m-1 flex justify-center"
+              icon="ri-alert-line"
+              label="Contacter un spécialiste"
+              @click="router.push({ name:'ExpertiseForm'})"
+            />
           </div>
           <div v-else>
             <div class="fr-tile__body">
@@ -144,6 +159,12 @@ function sendFeedback (isCorrect: boolean) {
                   Nous vous conseillons de faire appel à un expert pour confirmer cette réponse.
                 </p>
                 <ContactExpert v-if="isUserUsingCrosscall()" />
+                <DsfrButton
+                  class="m-1 flex justify-center"
+                  icon="ri-alert-line"
+                  label="Contacter un spécialiste"
+                  @click="router.push({ name:'ExpertiseForm'})"
+                />
               </div>
               <div v-if="isDummy === false && (route.name !== 'IdentificationTypologyResult'|| isDummyTypology !== true)">
                 <p
@@ -197,6 +218,18 @@ function sendFeedback (isCorrect: boolean) {
                   > Typologie : </span>
                   {{ label }}
                 </p>
+                <div
+                  v-if="foundAllKeyWords ||
+                    bypassCrosscall"
+                  class="fr-col-sm-6 fr-col-lg-8 mx-auto text-center"
+                >
+                  <DsfrButton
+                    class="m-1 flex justify-center"
+                    icon="ri-alert-line"
+                    label="Contacter un spécialiste"
+                    @click="router.push({ name:'ExpertiseForm'})"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -268,7 +301,7 @@ function sendFeedback (isCorrect: boolean) {
       <div class="feedback-thumb">
         <label
           class="feedback-click"
-          @click="sendFeedback(true)"
+          @click="submitFeedback(true)"
         >
           <VIcon
             v-if="isUp"
@@ -283,7 +316,7 @@ function sendFeedback (isCorrect: boolean) {
         </label>
         <label
           class="feedback-click"
-          @click="sendFeedback(false)"
+          @click="submitFeedback(false)"
         >
           <VIcon
             v-if="isDown"
